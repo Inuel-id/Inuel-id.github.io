@@ -1,1085 +1,237 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Encoder & Decoder Plus</title>
-    <style>
-        /* Define CSS variables for consistent theming */
-        :root {
-            --primary: #4361ee;
-            --primary-hover: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --glass: rgba(255, 255, 255, 0.95);
-        }
-        
-        /* Universal box-sizing for consistent layout */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        /* Body styling: font, max width, background, and animated pattern */
-        body {
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-        }
-        
-        /* Animated background pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            right: -50%;
-            bottom: -50%;
-            width: 200%;
-            height: 200%;
-            background: transparent url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E') repeat;
-            animation: backgroundMove 20s linear infinite;
-        }
-        
-        /* Keyframe animation for background pattern movement */
-        @keyframes backgroundMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
-        }
-        
-        /* Main container styling: glassmorphism effect */
-        .container {
-            background: var(--glass);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1; /* Ensure container is above the animated background */
-        }
-        
-        /* Heading styling with gradient text */
-        h1 {
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 700;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        /* Input section layout */
-        .input-section {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 25px;
-        }
-        
-        /* Label styling */
-        label {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--dark);
-            font-size: 1.1rem;
-        }
-        
-        /* Textarea styling */
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            resize: vertical;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-        }
-        
-        /* Textarea focus state */
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        /* Tab buttons container styling */
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 20px;
-            overflow-x: auto; /* Allow horizontal scrolling for many tabs */
-            white-space: nowrap;
-            padding: 5px;
-            background: #f5f5f5;
-            border-radius: 12px;
-            gap: 8px;
-        }
-        
-        /* Individual tab button styling */
-        .tab-button {
-            flex-shrink: 0; /* Prevent buttons from shrinking too much */
-            padding: 10px 20px;
-            background: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            color: #555;
-            position: relative;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            font-size: 0.95rem;
-        }
-        
-        /* Tab button hover state */
-        .tab-button:hover {
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* Active tab button state */
-        .tab-button.active {
-            color: white;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-            transform: scale(1.05);
-        }
-        
-        /* Action buttons grid layout */
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        /* General button styling */
-        button {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Button hover effect (shimmer) */
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: left 0.3s ease;
-        }
-        
-        button:hover::before {
-            left: 100%;
-        }
-        
-        /* Specific button colors and hover effects */
-        .encode-btn {
-            background: linear-gradient(135deg, var(--primary), #5a7cff);
-        }
-        
-        .encode-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
-        }
-        
-        .decode-btn {
-            background: linear-gradient(135deg, var(--secondary), #5348db);
-        }
-        
-        .decode-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(63, 55, 201, 0.4);
-        }
-        
-        .clear-btn {
-            background: linear-gradient(135deg, #6c757d, #868e96);
-        }
-        
-        .clear-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
-        }
-        
-        .copy-btn {
-            background: linear-gradient(135deg, var(--accent), #63d3ff);
-        }
-        
-        .copy-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(76, 201, 240, 0.4);
-        }
-        
-        /* Result section layout */
-        .result-section {
-            margin-top: 30px;
-        }
-        
-        /* Result box styling */
-        .result-box {
-            background: rgba(248, 249, 250, 0.9);
-            padding: 20px;
-            border-radius: 12px;
-            word-wrap: break-word; /* Ensure long words break */
-            border: 2px solid #e0e0e0;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            min-height: 120px;
-            max-height: 350px;
-            overflow-y: auto; /* Allow vertical scrolling */
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        /* Result box hover state */
-        .result-box:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-        }
-        
-        /* Result title styling */
-        .result-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.2rem;
-        }
-        
-        /* Toast notification styling */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 16px 24px;
-            border-radius: 10px;
-            color: white;
-            opacity: 0;
-            transition: all 0.4s ease;
-            z-index: 1000;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(100px); /* Initially off-screen */
-        }
-        
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0); /* Slide in */
-        }
-        
-        /* Specific toast colors */
-        .success-toast {
-            background: linear-gradient(135deg, var(--success), #5cbf2a);
-        }
-        
-        .error-toast {
-            background: linear-gradient(135deg, var(--danger), #ff6b6b);
-        }
-        
-        /* Character count styling */
-        .character-count {
-            font-size: 0.9rem;
-            color: #6c757d;
-            text-align: right;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-        
-        /* Extra options section (e.g., for Caesar Cipher shift amount) */
-        .extra-options {
-            background: rgba(243, 244, 246, 0.8);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none; /* Hidden by default */
-        }
-        
-        .extra-options label {
-            font-size: 0.95rem;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-        
-        .extra-options input {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 2px solid #ddd;
-            font-size: 1rem;
-            width: 100px; /* Fixed width for input */
-            transition: all 0.3s ease;
-        }
-        
-        .extra-options input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-        
-        /* Keyboard shortcuts section */
-        .keyboard-shortcuts {
-            background: rgba(248, 249, 250, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .keyboard-shortcuts h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .shortcut-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 8px;
-        }
-        
-        .shortcut-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .shortcut-key {
-            background: var(--primary);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        /* Custom scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-hover);
-        }
-        
-        /* Animation for result update */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .result-update {
-            animation: fadeIn 0.3s ease;
-        }
-        
-        /* History section styling */
-        .history-section {
-            margin-top: 30px;
-            background: rgba(248, 249, 250, 0.9);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .history-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .history-title h3 {
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-        
-        .history-item {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-        
-        .history-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .history-text {
-            flex: 1; /* Allow text to take available space */
-            min-width: 0; /* Allow text to shrink below its content size */
-            font-family: monospace;
-            font-size: 0.9rem;
-            /* Multi-line ellipsis for better history display */
-            display: -webkit-box;
-            -webkit-line-clamp: 2; /* Show maximum of 2 lines */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: normal; /* Allow text to wrap */
-            padding-right: 10px; /* Space between text and type */
-        }
-        
-        .history-type {
-            background: var(--primary);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            flex-shrink: 0; /* Prevent type label from shrinking */
-        }
-        
-        .clear-history-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-        
-        .clear-history-btn:hover {
-            background: #d32f2f;
-            transform: translateY(-2px);
-        }
-        
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .action-buttons {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-            
-            .tab-buttons {
-                gap: 5px;
-            }
-            
-            .tab-button {
-                padding: 8px 15px;
-                font-size: 0.85rem;
-            }
-            
-            .container {
-                padding: 20px 15px;
-            }
-            
-            .keyboard-shortcuts {
-                display: none; /* Hide shortcuts on small screens */
-            }
-            
-            .toast {
-                bottom: 20px;
-                right: 20px;
-                left: 20px; /* Center toast on mobile */
-                text-align: center;
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar Eclipse Demo</title>
+  <style>
+    :root {
+      --bg-start: #0b1020;
+      --bg-end: #1a2240;
+      --accent: #ffd166;
+      --text: #e6edf3;
+      --muted: #9aa4b2;
+      --btn: #7a5cff;
+      --btn-hover: #6a4bff;
+      --card: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+    }
 
-            .history-item {
-                flex-wrap: wrap; /* Allow history item content to wrap */
-            }
-            .history-text {
-                padding-right: 0; /* Remove padding right on small screens */
-                margin-bottom: 5px; /* Add space below text when wrapped */
-                -webkit-line-clamp: 2; /* Ensure 2 lines even if it wraps */
-            }
-            .history-type {
-                width: 100%; /* Make type label full width when wrapped */
-                text-align: right;
-            }
-        }
-    </style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(1200px 800px at 50% 20%, var(--bg-end), var(--bg-start));
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    main {
+      width: min(920px, 92vw);
+      padding: 28px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.4rem, 1.1rem + 2.2vw, 2.2rem);
+      letter-spacing: 0.3px;
+    }
+
+    p.lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 0.9rem + 0.4vw, 1.1rem);
+    }
+
+    .center {
+      display: grid;
+      place-items: center;
+      padding: 18px 0 6px;
+    }
+
+    button#eclipseBtn {
+      padding: 14px 26px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--btn), var(--btn-hover));
+      color: white;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(106, 75, 255, 0.35);
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    button#eclipseBtn:hover { 
+      transform: translateY(-1px); 
+      filter: brightness(1.05);
+      box-shadow: 0 14px 34px rgba(106, 75, 255, 0.45);
+    }
+
+    .hidden { display: none; }
+
+    /* Scene container */
+    .scene {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin: 6px auto 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: radial-gradient(120% 120% at 50% 20%, #111a33, #060913 55%, #03060e 100%);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* Subtle star field */
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8) 40%, transparent 42%),
+        radial-gradient(1.5px 1.5px at 30% 70%, rgba(255,255,255,0.6) 40%, transparent 42%),
+        radial-gradient(1.8px 1.8px at 70% 30%, rgba(255,255,255,0.7) 40%, transparent 42%),
+        radial-gradient(1.4px 1.4px at 85% 60%, rgba(255,255,255,0.65) 40%, transparent 42%),
+        radial-gradient(1.3px 1.3px at 50% 80%, rgba(255,255,255,0.6) 40%, transparent 42%),
+        radial-gradient(1.2px 1.2px at 20% 50%, rgba(255,255,255,0.55) 40%, transparent 42%);
+      opacity: 0.55;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Sun, corona, and moon are done in SVG for crispness */
+    .scene svg { width: 100%; height: 100%; display: block; }
+
+    /* Corona subtle pulse while the moon approaches */
+    .scene.play .corona { animation: coronaPulse 6.2s ease-in-out 1 both; }
+
+    @keyframes coronaPulse {
+      0%   { opacity: 0.15; filter: drop-shadow(0 0 0px #fef6b0); }
+      45%  { opacity: 0.35; filter: drop-shadow(0 0 12px #ffe07a); }
+      60%  { opacity: 0.5;  filter: drop-shadow(0 0 30px #ffd166); }
+      100% { opacity: 0.35; filter: drop-shadow(0 0 16px #ffe07a); }
+    }
+
+    /* Moon transit animation (plays once, then stops in place) */
+    .scene.play .moon { animation: transit 6s ease-in-out 1 both; }
+
+    @keyframes transit {
+      0%   { transform: translateX(-420px); }
+      50%  { transform: translateX(-20px); }
+      62%  { transform: translateX(0px); }     /* totality */
+      100% { transform: translateX(0px); }     /* hold final state */
+    }
+
+    /* Info section */
+    .info {
+      padding: 12px 0 4px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .info h2 { 
+      margin: 8px 0 6px; 
+      font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.4rem);
+    }
+    .info p { color: var(--muted); margin: 0 0 8px; }
+    .info ul { margin: 6px 0 0 18px; color: var(--muted); }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .scene.play .moon, .scene.play .corona { animation: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Advanced Encoder & Decoder Plus</h1>
-        
-        <div class="input-section">
-            <label for="inputText">Input Text:</label>
-            <textarea id="inputText" placeholder="Enter text to encode/decode..." oninput="updateCharCount()"></textarea>
-            <div class="character-count" id="charCount">Characters: 0</div>
-        </div>
-        
-        <div class="button-section">
-            <div class="tab-buttons" id="tabButtons">
-                <button class="tab-button active" data-type="base64">Base64</button>
-                <button class="tab-button" data-type="url">URL</button>
-                <button class="tab-button" data-type="morse">Morse Code</button>
-                <button class="tab-button" data-type="binary">Binary</button>
-                <button class="tab-button" data-type="hex">Hexadecimal</button>
-                <button class="tab-button" data-type="caesar">Caesar Cipher</button>
-                <button class="tab-button" data-type="rot13">ROT13</button>
-                <button class="tab-button" data-type="ascii">ASCII</button>
-                <button class="tab-button" data-type="sha256">SHA-256</button>
-                <button class="tab-button" data-type="reverse">Reverse String</button>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="encode-btn" onclick="process('encode')">
-                    <span>🔒 Encode</span>
-                </button>
-                <button class="decode-btn" onclick="process('decode')">
-                    <span>🔓 Decode</span>
-                </button>
-                <button class="clear-btn" onclick="clearAll()">
-                    <span>🗑️ Clear All</span>
-                </button>
-                <button class="copy-btn" onclick="copyResult()">
-                    <span>📋 Copy Result</span>
-                </button>
-            </div>
-            
-            <div id="extraOptions" class="extra-options">
-                <label for="shiftAmount">Shift Amount (for Caesar Cipher):</label>
-                <input type="number" id="shiftAmount" min="1" max="25" value="3">
-            </div>
-        </div>
-        
-        <div class="result-section">
-            <div class="result-title">
-                <span>Result:</span>
-                <span id="resultInfo" style="font-size: 0.85rem; color: #6c757d;"></span>
-            </div>
-            <div id="result" class="result-box"></div>
-        </div>
-        
-        <div class="keyboard-shortcuts">
-            <h3>⌨️ Keyboard Shortcuts</h3>
-            <div class="shortcut-list">
-                <div class="shortcut-item">
-                    <span class="shortcut-key">Ctrl + Enter</span>
-                    <span>Encode</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-key">Ctrl + Shift + Enter</span>
-                    <span>Decode</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-key">Ctrl + L</span>
-                    <span>Clear All</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-key">Ctrl + K</span>
-                    <span>Copy Result</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="history-section">
-            <div class="history-title">
-                <h3>📜 Recent Operations</h3>
-                <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
-            </div>
-            <div id="historyList"></div>
-        </div>
+  <main aria-live="polite">
+    <h1>Solar Eclipse Mini‑Library</h1>
+    <p class="lead">A tiny interactive demo. Click the button to watch a one‑time eclipse animation and read a quick explainer.</p>
+
+    <div class="center">
+      <button id="eclipseBtn" type="button" aria-controls="scene info">Eclipse</button>
     </div>
-    
-    <div id="toast" class="toast"></div>
 
-    <script>
-        let currentType = 'base64'; // Default encoding/decoding type
-        let lastAction = 'encode'; // Store the last action (encode/decode) for auto-processing
-        let history = JSON.parse(localStorage.getItem('encoderHistory') || '[]'); // Load history from local storage
-        
-        // Initialize tab buttons and add click listeners
-        const tabButtons = document.querySelectorAll('.tab-button');
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons and add to the clicked one
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                currentType = button.dataset.type; // Update current type based on data-type attribute
-                
-                // Show/hide extra options (e.g., shift amount for Caesar Cipher)
-                const extraOptions = document.getElementById('extraOptions');
-                if (currentType === 'caesar') {
-                    extraOptions.style.display = 'block';
-                } else {
-                    extraOptions.style.display = 'none';
-                }
+    <div id="scene" class="scene hidden" aria-hidden="true">
+      <svg viewBox="0 0 960 540" role="img" aria-label="Solar eclipse animation">
+        <!-- Sun -->
+        <defs>
+          <radialGradient id="sunGrad" cx="50%" cy="50%" r="65%">
+            <stop offset="0%" stop-color="#fff4c7" />
+            <stop offset="55%" stop-color="#ffd166" />
+            <stop offset="85%" stop-color="#ffb703" />
+            <stop offset="100%" stop-color="#ff9900" />
+          </radialGradient>
+        </defs>
 
-                // Automatically process if there's input text and a last action was performed
-                const inputTextElement = document.getElementById('inputText');
-                if (inputTextElement.value.trim() && lastAction) {
-                    process(lastAction);
-                }
-            });
-        });
-        
-        // Morse code mappings for encoding
-        const morseCode = {
-            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
-            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
-            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
-            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
-            'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
-            '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
-            '8': '---..', '9': '----.', ' ': '/', '.': '.-.-.-', ',': '--..--',
-            '?': '..--..', "'": '.----.', '!': '-.-.--', '@': '.--.-.', 
-            '&': '.-...', '(': '-.--.', ')': '-.--.-', '-': '-....-', 
-            '+': '.-.-.', '"': '.-..-.', ':': '---...', ';': '-.-.-.'
-        };
-        
-        // Create reverse morse dictionary
-        const reverseMorse = {};
-        Object.keys(morseCode).forEach(key => {
-            reverseMorse[morseCode[key]] = key;
-        });
+        <!-- Subtle horizon glow -->
+        <ellipse cx="480" cy="380" rx="420" ry="140" fill="rgba(255, 209, 102, 0.06)" />
 
-        /**
-         * Converts an ArrayBuffer to a hexadecimal string.
-         * Useful for displaying hash results.
-         * @param {ArrayBuffer} buffer - The buffer to convert.
-         * @returns {string} The hexadecimal representation.
-         */
-        function arrayBufferToHex(buffer) {
-            // Converts each byte to its hexadecimal representation (0-padded to 2 digits)
-            return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
-        }
-        
-        /**
-         * Processes the input text based on the selected type and action (encode/decode).
-         * @param {string} action - 'encode' or 'decode'.
-         */
-        async function process(action) { // Made async for SHA-256 hashing
-            const input = document.getElementById('inputText').value;
-            if (!input.trim()) {
-                showToast('Please enter some text to process!', 'error');
-                // Clear the result when input is empty
-                document.getElementById('result').textContent = '';
-                document.getElementById('resultInfo').textContent = '';
-                return;
-            }
-            
-            let result = '';
-            lastAction = action; // Update the last performed action
+        <!-- Sun disk -->
+        <circle cx="480" cy="270" r="110" fill="url(#sunGrad)" />
 
-            try {
-                if (action === 'encode') {
-                    switch (currentType) {
-                        case 'base64':
-                            // encodeURIComponent/unescape is used to handle Unicode characters correctly with btoa/atob
-                            result = btoa(unescape(encodeURIComponent(input)));
-                            break;
-                        case 'url':
-                            result = encodeURIComponent(input);
-                            break;
-                        case 'morse':
-                            // Convert input to uppercase and map each character to its Morse code
-                            result = input.toUpperCase().split('').map(c => morseCode[c] || c).join(' ');
-                            break;
-                        case 'binary':
-                            // Convert each character to its 8-bit binary representation
-                            result = Array.from(input).map(c => 
-                                c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
-                            break;
-                        case 'hex':
-                            // Convert each character to its hexadecimal representation
-                            result = Array.from(input).map(c => 
-                                c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
-                            break;
-                        case 'caesar':
-                            // Get shift amount, default to 3 if invalid
-                            const shift = parseInt(document.getElementById('shiftAmount').value) || 3;
-                            result = caesarCipher(input, shift);
-                            break;
-                        case 'rot13':
-                            // ROT13 is a Caesar cipher with a shift of 13
-                            result = rot13(input);
-                            break;
-                        case 'ascii':
-                            // Convert each character to its ASCII decimal value
-                            result = Array.from(input).map(c => c.charCodeAt(0)).join(' ');
-                            break;
-                        case 'sha256':
-                            // Check if Web Crypto API is available
-                            if (!window.crypto || !window.crypto.subtle) {
-                                showToast('SHA-256 hashing not supported in this browser.', 'error');
-                                result = 'Browser not supported';
-                                break;
-                            }
-                            const textEncoder = new TextEncoder(); // Encodes string to UTF-8 bytes
-                            const data = textEncoder.encode(input);
-                            // Perform SHA-256 hash using Web Crypto API
-                            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                            result = arrayBufferToHex(hashBuffer); // Convert the hash buffer to hex string
-                            break;
-                        case 'reverse':
-                            // Reverse the string
-                            result = input.split('').reverse().join('');
-                            break;
-                        default:
-                            showToast('Unknown encoding type selected!', 'error');
-                            return;
-                    }
-                } else { // decode
-                    switch (currentType) {
-                        case 'base64':
-                            result = decodeURIComponent(escape(atob(input)));
-                            break;
-                        case 'url':
-                            result = decodeURIComponent(input);
-                            break;
-                        case 'morse':
-                            // Split Morse code string by space and map back to characters
-                            result = input.split(' ').map(code => reverseMorse[code] || code).join('');
-                            break;
-                        case 'binary':
-                            result = input.split(' ').map(b => {
-                                // Validate binary string before parsing
-                                if (!/^[01]+$/.test(b)) return b; 
-                                return String.fromCharCode(parseInt(b, 2));
-                            }).join('');
-                            break;
-                        case 'hex':
-                            result = input.split(' ').map(h => {
-                                // Validate hex string before parsing
-                                if (!/^[0-9A-Fa-f]+$/.test(h)) return h;
-                                return String.fromCharCode(parseInt(h, 16));
-                            }).join('');
-                            break;
-                        case 'caesar':
-                            const shift = parseInt(document.getElementById('shiftAmount').value) || 3;
-                            // Decoding Caesar is encoding with (26 - shift)
-                            result = caesarCipher(input, 26 - shift); 
-                            break;
-                        case 'rot13':
-                            result = rot13(input); // ROT13 decode is the same as encode
-                            break;
-                        case 'ascii':
-                            result = input.split(' ').map(n => {
-                                const num = parseInt(n);
-                                // Check if parsed number is valid
-                                return isNaN(num) ? n : String.fromCharCode(num);
-                            }).join('');
-                            break;
-                        case 'sha256':
-                            showToast('SHA-256 is a one-way hash, cannot be decoded.', 'error');
-                            result = 'N/A (One-way hash)'; // Indicate that decoding is not possible
-                            break;
-                        case 'reverse':
-                            // Reversing a reversed string gets the original string back
-                            result = input.split('').reverse().join('');
-                            break;
-                        default:
-                            showToast('Unknown decoding type selected!', 'error');
-                            return;
-                    }
-                }
-                
-                // Update result with animation
-                const resultBox = document.getElementById('result');
-                resultBox.textContent = result;
-                // Add and remove class to trigger CSS animation for new result
-                resultBox.classList.add('result-update');
-                setTimeout(() => resultBox.classList.remove('result-update'), 300);
-                
-                // Update result information display
-                const resultInfo = document.getElementById('resultInfo');
-                resultInfo.textContent = `${currentType.toUpperCase()} ${action}d • ${result.length} characters`;
-                
-                // Add current operation to history
-                addToHistory(input, result, currentType, action);
-                
-                showToast(`${currentType.charAt(0).toUpperCase() + currentType.slice(1)} ${action} completed!`, 'success');
-            } catch (error) {
-                console.error("Processing error:", error);
-                showToast(`Error: Invalid input for ${currentType} ${action}!`, 'error');
-                // Clear result on error and display an informative message
-                document.getElementById('result').textContent = 'Error during processing. Check input format.';
-                document.getElementById('resultInfo').textContent = '';
-            }
-        }
-        
-        /**
-         * Encrypts/decrypts text using the Caesar Cipher.
-         * @param {string} text - The input text.
-         * @param {number} shift - The shift amount.
-         * @returns {string} The processed text.
-         */
-        function caesarCipher(text, shift) {
-            return text.split('').map(char => {
-                const code = char.charCodeAt(0);
-                
-                // Check if character is an uppercase letter (A-Z)
-                if (code >= 65 && code <= 90) {
-                    return String.fromCharCode(((code - 65 + shift) % 26) + 65);
-                }
-                // Check if character is a lowercase letter (a-z)
-                else if (code >= 97 && code <= 122) {
-                    return String.fromCharCode(((code - 97 + shift) % 26) + 97);
-                }
-                return char; // Return non-alphabetic characters unchanged
-            }).join('');
-        }
-        
-        /**
-         * Encrypts/decrypts text using ROT13.
-         * @param {string} text - The input text.
-         * @returns {string} The processed text.
-         */
-        function rot13(text) {
-            return caesarCipher(text, 13);
-        }
-        
-        /**
-         * Clears the input text, result, and character count.
-         */
-        function clearAll() {
-            document.getElementById('inputText').value = '';
-            document.getElementById('result').textContent = '';
-            document.getElementById('resultInfo').textContent = '';
-            updateCharCount();
-            showToast('Cleared all content!', 'success');
-            localStorage.removeItem('encoderInput'); // Clear saved input from local storage
-        }
-        
-        /**
-         * Copies the content of the result box to the clipboard.
-         */
-        function copyResult() {
-            const result = document.getElementById('result').textContent;
-            // Prevent copying if result is empty or indicates a one-way hash
-            if (!result || result === 'N/A (One-way hash)' || result === 'Browser not supported') {
-                showToast('Nothing to copy or cannot copy one-way hash result!', 'error');
-                return;
-            }
-            
-            // Use fallback for older browsers or environments where navigator.clipboard might not work
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(result)
-                    .then(() => {
-                        showToast('Copied to clipboard!', 'success');
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy using clipboard API: ', err);
-                        fallbackCopyTextToClipboard(result);
-                    });
-            } else {
-                fallbackCopyTextToClipboard(result);
-            }
-        }
+        <!-- Corona (glow ring) -->
+        <g class="corona" style="opacity:0.3">
+          <circle cx="480" cy="270" r="140" fill="none" stroke="#ffd166" stroke-width="16" stroke-opacity="0.3" />
+          <circle cx="480" cy="270" r="170" fill="none" stroke="#ffe07a" stroke-width="10" stroke-opacity="0.22" />
+          <circle cx="480" cy="270" r="205" fill="none" stroke="#fff4c7" stroke-width="6" stroke-opacity="0.18" />
+        </g>
 
-        /**
-         * Fallback function for copying text to clipboard (older browsers).
-         * @param {string} text - The text to copy.
-         */
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";  // Avoid scrolling to bottom of page in Microsoft Edge.
-            textArea.style.opacity = "0";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showToast('Copied to clipboard (fallback)!', 'success');
-                } else {
-                    showToast('Failed to copy to clipboard (fallback)!', 'error');
-                }
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-                showToast('Failed to copy to clipboard!', 'error');
-            }
-            document.body.removeChild(textArea);
-        }
-        
-        /**
-         * Displays a toast notification with a given message and type.
-         * @param {string} message - The message to display.
-         * @param {string} type - The type of toast ('success' or 'error').
-         */
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast'; // Reset classes
-            toast.classList.add(`${type}-toast`);
-            toast.classList.add('show');
-            
-            // Hide toast after 3 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-        
-        /**
-         * Updates the character count displayed below the input text area.
-         */
-        function updateCharCount() {
-            const text = document.getElementById('inputText').value;
-            document.getElementById('charCount').textContent = `Characters: ${text.length}`;
-        }
-        
-        /**
-         * Adds an operation to the history list and saves to local storage.
-         * @param {string} input - The input text.
-         * @param {string} output - The resulting output text.
-         * @param {string} type - The type of operation (e.g., 'base64').
-         * @param {string} action - The action performed ('encode' or 'decode').
-         */
-        function addToHistory(input, output, type, action) {
-            const historyItem = {
-                input: input, // Store full input for potential future use or hover details
-                output: output, // Store full output
-                type: type,
-                action: action,
-                timestamp: new Date().toISOString()
-            };
-            
-            history.unshift(historyItem); // Add to the beginning of the array
-            history = history.slice(0, 10); // Keep only the last 10 items
-            localStorage.setItem('encoderHistory', JSON.stringify(history));
-            updateHistoryDisplay(); // Refresh the history display
-        }
-        
-        /**
-         * Renders the history list based on the 'history' array.
-         * Improves history text display to avoid overflow.
-         */
-        function updateHistoryDisplay() {
-            const historyList = document.getElementById('historyList');
-            if (history.length === 0) {
-                historyList.innerHTML = '<p style="text-align: center; color: #6c757d;">No operations yet</p>';
-                return;
-            }
-            
-            // Generate HTML for each history item
-            historyList.innerHTML = history.map(item => {
-                // Display up to 100 characters of input/output for brevity
-                const maxDisplayLength = 100;
-                const displayText = item.input.length > maxDisplayLength ?
-                                    item.input.substring(0, maxDisplayLength) + '...' :
-                                    item.input;
-                return `
-                    <div class="history-item">
-                        <span class="history-text" title="Input: ${item.input}\nOutput: ${item.output}\nAction: ${item.action.toUpperCase()}">${displayText || '(empty)'}</span>
-                        <span class="history-type">${item.type.toUpperCase()}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        /**
-         * Clears all items from the history and local storage.
-         */
-        function clearHistory() {
-            history = []; // Empty the history array
-            localStorage.removeItem('encoderHistory'); // Remove from local storage
-            updateHistoryDisplay(); // Refresh the display
-            showToast('History cleared!', 'success');
-        }
-        
-        // Add global keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            // Ctrl+Enter to encode
-            if (event.ctrlKey && event.key === 'Enter') {
-                process('encode');
-                event.preventDefault(); // Prevent default browser action (e.g., new line in textarea)
-            }
-            // Ctrl+Shift+Enter to decode
-            else if (event.ctrlKey && event.shiftKey && event.key === 'Enter') {
-                process('decode');
-                event.preventDefault();
-            }
-            // Ctrl+L to clear all (lower case 'l')
-            else if (event.ctrlKey && event.key === 'l') {
-                clearAll();
-                event.preventDefault();
-            }
-            // Ctrl+K to copy result (lower case 'k')
-            else if (event.ctrlKey && event.key === 'k') {
-                copyResult();
-                event.preventDefault();
-            }
-        });
-        
-        // Initialize on page load
-        window.onload = function() {
-            updateCharCount(); // Update character count initially
-            updateHistoryDisplay(); // Load and display history
-            
-            // Restore input text from local storage if available
-            const savedInput = localStorage.getItem('encoderInput');
-            if (savedInput) {
-                document.getElementById('inputText').value = savedInput;
-                updateCharCount();
-            }
-        };
+        <!-- Moon (starts off-screen left, moves to cover sun) -->
+        <g class="moon" style="transform: translateX(-420px); will-change: transform;">
+          <circle cx="480" cy="270" r="118" fill="#0b0f1a" />
+          <!-- Limb highlight -->
+          <circle cx="480" cy="270" r="118" fill="none" stroke="#1a2133" stroke-width="3" />
+        </g>
+      </svg>
+    </div>
 
-        // Auto-save input text to local storage
-        const inputText = document.getElementById('inputText');
-        inputText.addEventListener('input', function() {
-            localStorage.setItem('encoderInput', this.value);
-        });
-    </script>
+    <section id="info" class="info hidden" aria-hidden="true">
+      <h2>What is a solar eclipse?</h2>
+      <p>A solar eclipse happens when the Moon moves between the Earth and the Sun, casting a shadow on Earth and fully or partially blocking the Sun’s light.</p>
+      <ul>
+        <li><strong>Total eclipse</strong>: the Moon completely covers the Sun at the path of totality.</li>
+        <li><strong>Annular eclipse</strong>: the Moon is farther away, leaving a bright “ring of fire.”</li>
+        <li><strong>Partial eclipse</strong>: only part of the Sun is covered.</li>
+      </ul>
+      <p><strong>Safety</strong>: Never look directly at the Sun without certified solar filters, even during partial phases.</p>
+    </section>
+  </main>
+
+  <script>
+    const btn = document.getElementById('eclipseBtn');
+    const scene = document.getElementById('scene');
+    const info = document.getElementById('info');
+
+    function startEclipse() {
+      // Hide button
+      btn.remove();
+      // Reveal scene and info
+      scene.classList.remove('hidden');
+      scene.classList.add('play');
+      scene.setAttribute('aria-hidden', 'false');
+
+      info.classList.remove('hidden');
+      info.setAttribute('aria-hidden', 'false');
+
+      // Optionally, after animation ends we keep the final frame (CSS forwards already does this)
+      const moon = scene.querySelector('.moon');
+      if (moon) {
+        moon.addEventListener('animationend', () => {
+          // Ensure it stays at final state
+          moon.style.transform = 'translateX(0)';
+        }, { once: true });
+      }
+    }
+
+    btn.addEventListener('click', startEclipse);
+  </script>
 </body>
 </html>
