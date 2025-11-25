@@ -1,5 +1,3 @@
-Here's the corrected README.md addressing all of GitHub Copilot's points:
-
 ```markdown
 <div align="center">
 
