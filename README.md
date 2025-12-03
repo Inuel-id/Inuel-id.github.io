@@ -1,11 +1,11 @@
 ```markdown
 <div align="center">
 
-# 🌌 Animation Galaxy
+# Animation Galaxy
 
 ### Ultimate CSS Animation Library
 
-**✨ 120+ Stunning CSS Animations Ready to Copy & Paste**
+** 120+ Stunning CSS Animations Ready to Copy & Paste**
 
 [![HTML](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)](#)
 [![CSS](https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)](#)
@@ -16,30 +16,7 @@
 
 ---
 
-## 🎬 Demo
-
-<!-- TODO: Add a demo.gif file to your repository root -->
-![Animation Galaxy Preview](demo.gif)
-
-*⚡ Interactive preview with search, categories, and one-click copy*
-
----
-
-## 📖 Table of Contents
-
-- [🌟 Features](#-features)
-- [🚀 Quick Start](#-quick-start)
-- [📦 Categories](#-categories)
-- [💻 Usage](#-usage)
-- [🎨 Customization](#-customization)
-- [🌐 Browser Support](#-browser-support)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#license)
-- [🙏 Acknowledgments](#-acknowledgments)
-
----
-
-## 🌟 Features
+## Features
 
 - **120+ Handcrafted Animations**: From basic fades to complex 3D transforms
 - **12 Organized Categories**: Basic, 3D, Loaders, Physics, Creative, Text effects & more
@@ -54,7 +31,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: Direct Download
 1. Download `Animation.hub.html`
@@ -73,7 +50,7 @@ Simply copy any animation's CSS code from the interface and paste it into your s
 
 ---
 
-📦 Categories
+ Categories
 
 Category	Count	Description	
 Basic	12	Core animations (bounce, rotate, pulse, etc.)	
@@ -92,7 +69,7 @@ Effects	10+	Special visual effects
 
 ---
 
-💻 Usage
+ Usage
 
 1. Find Your Animation
 Use the search bar or category filters to browse animations.
@@ -138,7 +115,7 @@ Adjust animation properties to fit your needs:
 
 ---
 
-🎨 Customization
+Customization
 
 Colors
 The library uses CSS custom properties (variables) for easy theming:
@@ -178,20 +155,7 @@ Experiment with different timing functions:
 
 ---
 
-🌐 Browser Support
-
-Browser	Version	
-Chrome	60+ ✅	
-Firefox	55+ ✅	
-Safari	12+ ✅	
-Edge	79+ ✅	
-Opera	47+ ✅	
-
-All animations use modern CSS features. For older browsers, consider adding prefixes.
-
----
-
-🤝 Contributing
+ Contributing
 
 We welcome contributions! Here's how you can help:
 
@@ -237,35 +201,13 @@ Adding a New Animation
 
 ---
 
-📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-MIT License
-
-Copyright (c) 2024 Animation Galaxy
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files...
-
----
-
-🙏 Acknowledgments
-
-- Inspired by [Animate.css](https://animate.style/) and modern web design trends
-- Color palette influenced by cyberpunk and neon aesthetics
-- Particle system design from various CSS animation showcases
-- Community contributions and feedback
-
----
-
-⭐ Support This Project
+ Support This Project
 
 If you find this library useful, please consider:
 
-- ⭐ Star this repository
-- 🐦 Share on Twitter/X
-- 💼 Use it in your projects
-- 📝 Contribute new animations
+-  Star this repository
+-  Share on Twitter/X
+-  Use it in your projects
+-  Contribute new animations
 
 –––
