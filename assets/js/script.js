@@ -138,8 +138,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // 6. User Customization (Settings)
+    // 6. User Customization (Settings Modal)
     // -------------------------------------------------------------------------
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtns = document.querySelectorAll('[data-close="settingsModal"]');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Open Modal
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+    }
+
+    // Close Modal
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove('active');
+    }
+
+    closeSettingsBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            closeModal(btn.dataset.close);
+        });
+    });
+
+    // Close on click outside (General for all modals)
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.classList.remove('active');
+        }
+    });
+
+    // Tabs Logic
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active from all
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Add active to current
+            btn.classList.add('active');
+            const tabId = btn.dataset.tab;
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
 
     // Design System Switcher
     const designSelect = document.getElementById('designSelect');
@@ -147,8 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         designSelect.addEventListener('change', (e) => {
             document.body.setAttribute('data-design', e.target.value);
         });
-
-        // Set initial state
         document.body.setAttribute('data-design', 'm3');
     }
 
@@ -161,10 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
             isLightMode = !isLightMode;
             if (isLightMode) {
                 document.body.setAttribute('data-theme', 'light');
-                themeToggle.innerHTML = '☀️';
+                themeToggle.innerHTML = '☀️ Light Mode';
             } else {
                 document.body.removeAttribute('data-theme');
-                themeToggle.innerHTML = '🌙';
+                themeToggle.innerHTML = '🌙 Dark Mode';
             }
         });
     }
@@ -176,10 +220,121 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.setProperty('--primary', e.target.value);
         });
     }
+
+    // -------------------------------------------------------------------------
+    // 7. Animation Creator Playground
+    // -------------------------------------------------------------------------
+    const logo = document.querySelector('.logo');
+    const creatorModal = document.getElementById('creatorModal');
+    const closeCreatorBtns = document.querySelectorAll('[data-close="creatorModal"]');
+    const animSelect = document.getElementById('animSelect');
+    const creatorBox = document.getElementById('creatorBox');
+    const playAnimBtn = document.getElementById('playAnimBtn');
+    const durationRange = document.getElementById('durationRange');
+    const durationValue = document.getElementById('durationValue');
+    const easingSelect = document.getElementById('easingSelect');
+    const copyCreatorBtn = document.getElementById('copyCreatorBtn');
+
+    // Open Creator on Logo Click
+    if (logo && creatorModal) {
+        logo.addEventListener('click', () => {
+            creatorModal.classList.add('active');
+            populateAnimationOptions();
+        });
+    }
+
+    closeCreatorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            closeModal('creatorModal');
+        });
+    });
+
+    // Populate Select with existing animations
+    function populateAnimationOptions() {
+        if (animSelect.options.length > 1) return; // Already populated
+
+        // Extract animation names from existing cards
+        const cards = document.querySelectorAll('.animation-card');
+        const animations = new Set();
+
+        cards.forEach(card => {
+            const preview = card.querySelector('.animated-element');
+            if (preview) {
+                // Get classes that aren't 'animated-element'
+                const classes = Array.from(preview.classList).filter(c => c !== 'animated-element');
+                classes.forEach(c => animations.add(c));
+            }
+        });
+
+        animations.forEach(anim => {
+            const option = document.createElement('option');
+            option.value = anim;
+            option.textContent = anim.charAt(0).toUpperCase() + anim.slice(1).replace(/([A-Z])/g, ' $1').trim();
+            animSelect.appendChild(option);
+        });
+    }
+
+    // Update Duration UI
+    if (durationRange) {
+        durationRange.addEventListener('input', (e) => {
+            durationValue.textContent = e.target.value + 's';
+        });
+    }
+
+    // Play Animation
+    if (playAnimBtn) {
+        playAnimBtn.addEventListener('click', () => {
+            const animName = animSelect.value;
+            const duration = durationRange.value;
+            const easing = easingSelect.value;
+
+            if (!animName) return;
+
+            // Reset
+            creatorBox.style.animation = 'none';
+            creatorBox.className = 'creator-box'; // Reset classes
+
+            // Trigger reflow
+            void creatorBox.offsetWidth;
+
+            // Apply new
+            creatorBox.classList.add(animName);
+            creatorBox.style.animationDuration = duration + 's';
+            creatorBox.style.animationTimingFunction = easing;
+            creatorBox.style.animationIterationCount = 'infinite';
+        });
+    }
+
+    // Copy CSS
+    if (copyCreatorBtn) {
+        copyCreatorBtn.addEventListener('click', () => {
+            const animName = animSelect.value;
+            if (!animName) return;
+
+            const duration = durationRange.value;
+            const easing = easingSelect.value;
+
+            const css = `/* ${animName} configuration */
+.element {
+    animation-name: ${animName};
+    animation-duration: ${duration}s;
+    animation-timing-function: ${easing};
+    animation-iteration-count: infinite;
+}`;
+
+            navigator.clipboard.writeText(css).then(() => {
+                const originalText = copyCreatorBtn.innerHTML;
+                copyCreatorBtn.innerHTML = '✓ Copied!';
+                setTimeout(() => {
+                    copyCreatorBtn.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    }
 });
 
 // -------------------------------------------------------------------------
-// 7. Global Copy Function
+// 7. Global Copy Function (Needs to be outside DOMContentLoaded to be accessible via onclick)
 // -------------------------------------------------------------------------
 window.copyCode = function(button) {
     const codeBlock = button.previousElementSibling.querySelector('.code-block');
@@ -191,7 +346,6 @@ window.copyCode = function(button) {
         const originalText = button.innerHTML;
         button.innerHTML = '<span>✓</span> Copied!';
 
-        // Use inline style to show success state, but respect theme otherwise
         const originalBg = button.style.background;
         button.style.background = 'linear-gradient(135deg, var(--success), #00cc66)';
 

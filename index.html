@@ -6,10 +6,28 @@
   <title>
    ✨ Animation Galaxy - Ultimate CSS Animation Library
   </title>
+  <meta name="description" content="Ultimate CSS Animation Library. 120+ Stunning, Copy-Paste Ready Animations. Basic, 3D, Physics, and more.">
+  <meta name="keywords" content="CSS Animations, Web Design, Frontend, Library, Keyframes, 3D Animations, UI/UX">
+  <meta name="author" content="Inuel-id">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/Inuel-id/animation-galaxy">
+  <meta property="og:title" content="✨ Animation Galaxy - Ultimate CSS Animation Library">
+  <meta property="og:description" content="120+ Stunning CSS Animations Ready to Copy & Paste. No dependencies.">
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/Inuel-id/animation-galaxy">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://github.com/Inuel-id/animation-galaxy">
+  <meta property="twitter:title" content="✨ Animation Galaxy - Ultimate CSS Animation Library">
+  <meta property="twitter:description" content="120+ Stunning CSS Animations Ready to Copy & Paste. No dependencies.">
+  <meta property="twitter:image" content="https://opengraph.githubassets.com/1/Inuel-id/animation-galaxy">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="style.css" rel="stylesheet"/>
+  <link href="assets/css/style.css" rel="stylesheet"/>
  </head>
  <body>
   <div class="bg-animation">
@@ -167,44 +185,112 @@
         🔍
        </span>
       </div>
-      <!-- Settings Panel -->
-      <div class="settings-panel">
-       <!-- Theme Toggle -->
-       <div class="setting-group">
-        <span class="setting-label">
-         Theme
-        </span>
-        <button aria-label="Toggle Theme" class="theme-toggle-btn" id="themeToggle">
-         🌙
-        </button>
-       </div>
-       <!-- Design System Switcher -->
-       <div class="setting-group">
-        <span class="setting-label">
-         Design
-        </span>
-        <select class="design-select" id="designSelect">
-         <option value="m3">
-          Material 3
-         </option>
-         <option value="ant">
-          Ant Design
-         </option>
-         <option value="fluent">
-          Fluent
-         </option>
-        </select>
-       </div>
-       <!-- Color Picker -->
-       <div class="setting-group">
-        <span class="setting-label">
-         Accent
-        </span>
-        <div class="color-picker-wrapper">
-         <input id="accentColor" type="color" value="#00ffff"/>
+      <!-- Settings Button -->
+      <button id="settingsBtn" class="settings-btn" aria-label="Open Settings">
+        ⚙️
+      </button>
+     </div>
+
+     <!-- Creator Modal -->
+     <div class="modal-overlay" id="creatorModal">
+        <div class="modal-content creator-content">
+            <div class="modal-header">
+                <h2>Animation Playground</h2>
+                <button class="close-modal-btn" data-close="creatorModal">×</button>
+            </div>
+            <div class="modal-body creator-body">
+                <div class="creator-preview">
+                    <div id="creatorBox" class="creator-box"></div>
+                </div>
+                <div class="creator-controls">
+                    <div class="control-row">
+                        <label>Animation</label>
+                        <select id="animSelect" class="creator-select">
+                            <option value="">Select Animation...</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                    <div class="control-row">
+                        <label>Duration (s)</label>
+                        <input type="range" id="durationRange" min="0.1" max="5" step="0.1" value="1">
+                        <span id="durationValue">1.0s</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Easing</label>
+                        <select id="easingSelect" class="creator-select">
+                            <option value="linear">Linear</option>
+                            <option value="ease">Ease</option>
+                            <option value="ease-in">Ease In</option>
+                            <option value="ease-out">Ease Out</option>
+                            <option value="ease-in-out">Ease In Out</option>
+                            <option value="cubic-bezier(0.68, -0.55, 0.265, 1.55)">Bounce</option>
+                        </select>
+                    </div>
+                    <div class="creator-actions">
+                        <button id="playAnimBtn" class="action-btn play-btn">▶ Play</button>
+                        <button id="copyCreatorBtn" class="action-btn copy-action-btn">📋 Copy CSS</button>
+                    </div>
+                </div>
+            </div>
         </div>
-       </div>
-      </div>
+     </div>
+
+     <!-- Settings Modal -->
+     <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal-btn" data-close="settingsModal">×</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="appearance">Appearance</button>
+                <button class="tab-btn" data-tab="about">About</button>
+            </div>
+            <div class="modal-body">
+                <!-- Appearance Tab -->
+                <div class="tab-content active" id="appearance">
+                    <div class="setting-row">
+                        <span class="setting-label">Theme Mode</span>
+                        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                            🌙 Dark Mode
+                        </button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">Design System</span>
+                        <select class="design-select" id="designSelect">
+                            <option value="m3">Material Design 3</option>
+                            <option value="ant">Ant Design</option>
+                            <option value="fluent">Fluent Design</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">Accent Color</span>
+                        <div class="color-picker-wrapper">
+                            <input id="accentColor" type="color" value="#00ffff"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- About Tab -->
+                <div class="tab-content" id="about">
+                    <div class="about-section">
+                        <h3>Animation Galaxy</h3>
+                        <p>The ultimate CSS animation library for modern web development. 120+ handcrafted animations ready to copy & paste.</p>
+                        <div class="about-links">
+                            <a href="https://github.com/Inuel-id/animation-galaxy" target="_blank" class="github-link">
+                                <span>📦</span> View on GitHub
+                            </a>
+                            <a href="https://github.com/Inuel-id" target="_blank" class="github-link">
+                                <span>👤</span> Follow @Inuel-id
+                            </a>
+                        </div>
+                        <div class="credits">
+                            <p>Version 1.2.0 • MIT License</p>
+                            <p>Created with ❤️ by Inuel-id</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
      </div>
     </header>
     <main class="animation-grid" id="animationGrid">
@@ -3627,7 +3713,7 @@
     </main>
    </div>
   </div>
-  <script src="script.js">
+  <script src="assets/js/script.js">
   </script>
  </body>
 </html>
