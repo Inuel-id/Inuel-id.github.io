@@ -8,7 +8,6 @@
 
 [![HTML](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)](#)
 [![CSS](https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)](#)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](#license)
 [![GitHub stars](https://img.shields.io/github/stars/Inuel-id/animation-galaxy?style=for-the-badge)](https://github.com/Inuel-id/animation-galaxy)
 
 </div>
@@ -151,6 +150,3 @@ If you find this library useful, please consider:
 -  Follow **@Inuel-id**
 
 ---
-<div align="center">
-    <sub>Created with ❤️ by Inuel-id</sub>
-</div>
