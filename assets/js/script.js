@@ -205,10 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
             isLightMode = !isLightMode;
             if (isLightMode) {
                 document.body.setAttribute('data-theme', 'light');
-                themeToggle.innerHTML = '☀️ Light Mode';
+                themeToggle.innerHTML = ' Light Mode';
             } else {
                 document.body.removeAttribute('data-theme');
-                themeToggle.innerHTML = '🌙 Dark Mode';
+                themeToggle.innerHTML = ' Dark Mode';
             }
         });
     }
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             navigator.clipboard.writeText(css).then(() => {
                 const originalText = copyCreatorBtn.innerHTML;
-                copyCreatorBtn.innerHTML = '✓ Copied!';
+                copyCreatorBtn.innerHTML = ' Copied!';
                 setTimeout(() => {
                     copyCreatorBtn.innerHTML = originalText;
                 }, 2000);
@@ -344,7 +344,7 @@ window.copyCode = function(button) {
 
     navigator.clipboard.writeText(code).then(() => {
         const originalText = button.innerHTML;
-        button.innerHTML = '<span>✓</span> Copied!';
+        button.innerHTML = '<span></span> Copied!';
 
         const originalBg = button.style.background;
         button.style.background = 'linear-gradient(135deg, var(--success), #00cc66)';
@@ -355,7 +355,7 @@ window.copyCode = function(button) {
         }, 2000);
     }).catch(err => {
         console.error('Failed to copy: ', err);
-        button.innerHTML = '<span>❌</span> Error';
+        button.innerHTML = '<span></span> Error';
         setTimeout(() => {
             button.innerHTML = originalText;
         }, 2000);
